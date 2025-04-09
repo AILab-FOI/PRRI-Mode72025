@@ -24,6 +24,7 @@ class Menu:
     def start_game(self): # * Pocetak igre
         print("Starting game.")
         self.app.state = GAME
+        self.app.switch_to_game()
 
     def exit_game(self): # * Izlaz iz igre
         pg.quit()
