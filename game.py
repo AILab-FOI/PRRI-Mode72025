@@ -1,5 +1,6 @@
 import pygame as pg
 import numpy as np
+import random
 from enemies import *; 
 
 class Projectile:
@@ -70,6 +71,35 @@ class Game:
         for projectile in self.projectiles:
             projectile.draw(screen, self.mode7)
     
-    def shoot(self, player_pos, player_angle):
+    def shoot_revolver(self, player_pos, player_angle):
         self.projectiles.append(Projectile(player_pos, player_angle))
+
+    #Evenly distributed shotgun pellets
+    #def shoot_shotgun(self, player_pos, player_angle, num_pellets=5, spread_degrees=30):
+    #    spread_rad = np.radians(spread_degrees)
+     #   base_angle = player_angle
+     #   for i in range(num_pellets):
+     #       t = i / (num_pellets - 1) if num_pellets > 1 else 0.5
+     #       offset = spread_rad * (t - 0.5)
+     #       pellet_angle = base_angle + offset
+     #       proj = Projectile(player_pos, pellet_angle)
+     #       self.projectiles.append(proj)
+            
+    def shoot_minigun(self, player_pos, player_angle):
+        num_projectiles = 1
+        spread = 3
+        for i in range(num_projectiles):
+            angle_offset = np.radians(np.random.uniform(-spread, spread))
+            projectile_angle = player_angle + angle_offset
+            proja = Projectile(player_pos, projectile_angle)
+            self.projectiles.append(proja)
+
+    def shoot_shotgun(self, player_pos, player_angle, num_pellets=5, spread_degrees=30):
+        spread_rad = np.radians(spread_degrees)
+        base_angle = player_angle
+        for _ in range(num_pellets):
+            offset = random.uniform(-spread_rad / 2, spread_rad / 2)
+            pellet_angle = base_angle + offset
+            proj = Projectile(player_pos, pellet_angle)
+            self.projectiles.append(proj)
 
