@@ -103,7 +103,7 @@ class Game:
                             drop_type = random.choice([HealthDrop, ShotgunDrop, MinigunDrop])
                             pos = enemy.pos.copy()
                             if drop_type == HealthDrop:
-                                self.drops.append(HealthDrop(pos, self.player))
+                                self.drops.append(HealthDrop(pos, self.player, self.app))
                             else:
                                 self.drops.append(drop_type(pos, self.app))
 
