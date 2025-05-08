@@ -22,6 +22,10 @@ class App:
         self.state = MENU
         self.minigun_last_shot = 0
         self.weapon = REVOLVER
+        self.weapon_timer = 0
+        self.powerup_icon = pg.image.load("textures/Steampunk_valve_and_pipe.png").convert_alpha()
+        self.powerup_icon = pg.transform.scale(self.powerup_icon, (128, 128))
+        self.powerup_sound = pg.mixer.Sound("music/Timer.mp3")
         self.start_time = time.time()
         self.enemies_killed = 0
         self.results_screen = None
@@ -30,12 +34,20 @@ class App:
             SHOTGUN: pg.image.load("textures/shotgun_steampunk.png").convert_alpha(),
             MINIGUN: pg.image.load("textures/minigun_steampunk.png").convert_alpha(),
         }
+
+        original_full = pg.image.load("textures/steampunk_bar_full.png").convert_alpha()
+        scale_factor = 0.19
+        self.bar_full = pg.transform.scale(original_full, (
+        int(original_full.get_width() * scale_factor), int(original_full.get_height() * scale_factor)))
+
+
         for key in self.weapon_icons:
             self.weapon_icons[key] = pg.transform.scale(self.weapon_icons[key], (80, 80))
         self.weapon_frame = pg.image.load("textures/UI_frame_static.png").convert_alpha()
-        self.weapon_frame = pg.transform.scale(self.weapon_frame, (300, 100))
+        self.weapon_frame = pg.transform.scale(self.weapon_frame, (300, 200))
         self.shooting = False
         self.shotgun_sound = pg.mixer.Sound("music/shotgun sound effect.mp3")
+        self.health_sound = pg.mixer.Sound("music/HP UP.mp3")
         pg.mixer.music.load("music/Pixel Pulse.mp3")
         pg.mixer.music.set_volume(0.5)
         pg.mixer.music.play(-1, 0.0)
@@ -81,8 +93,13 @@ class App:
     def update(self):
         if self.state == MENU:
             self.menu.update()
+        # Reset weapon after timer
+        if self.weapon != REVOLVER and time.time() > self.weapon_timer:
+            self.weapon = REVOLVER
+            print("[TIMER] Power-up expired")
         elif self.state == GAME:
             if self.player.is_dead():
+                self.powerup_sound.stop()
                 self.state = GAME_OVER
                 self.results_screen = ResultsScreen(
                     self.screen,
@@ -105,8 +122,10 @@ class App:
                     self.minigun_last_shot = now
             self.clock.tick()
             pg.display.set_caption(f'{self.clock.get_fps():.1f}')
+
         elif self.state == GAME_OVER:
             pass
+
 
 
     def draw_ui(self):
@@ -119,6 +138,23 @@ class App:
         self.screen.blit(enemy_text, (10, 40))
 
         self.player.draw_health(self.screen)
+        # Show icon if powerup is active
+
+        #if self.weapon != REVOLVER and time.time() < self.weapon_timer:
+         #   self.screen.blit(self.powerup_icon, (1115, 200))  # pozicija ikone
+
+        if self.weapon != REVOLVER and time.time() < self.weapon_timer:
+            x, y = 1090, 200
+            total = 10  # trajanje
+            remaining = self.weapon_timer - time.time()
+            percent = max(0, min(1, remaining / total))
+
+            full_width = int(self.bar_full.get_width() * percent)
+            if full_width > 0:
+                bar_clip = self.bar_full.subsurface(
+                    (0, 0, full_width, self.bar_full.get_height())
+                )
+                self.screen.blit(bar_clip, (x, y))
 
     def draw_weapon_ui(self):
         padding = 20
@@ -133,7 +169,7 @@ class App:
         frame_rect.topleft = (x, y)
         self.screen.blit(self.weapon_frame, frame_rect)
         icon = self.weapon_icons[self.weapon]
-        icon = pg.transform.scale(icon, (64, 64))
+        icon = pg.transform.scale(icon, (128, 128))
         icon_x = frame_rect.x + (frame_rect.width - icon.get_width()) // 2
         icon_y = frame_rect.y + (frame_rect.height - icon.get_height()) // 2
         self.screen.blit(icon, (icon_x, icon_y))
@@ -195,6 +231,13 @@ class App:
         pg.mixer.music.set_volume(0.5)
         pg.mixer.music.play(-1, 0.0)
 
+    def apply_powerup(self, weapon_type):
+        print(f"[POWERUP] Weapon set to {weapon_type}")
+        self.weapon = weapon_type
+        self.weapon_timer = time.time() + 10
+        self.powerup_sound.stop()
+        self.powerup_sound.play()
+
     def run(self):
         while True:
             self.check_event()
@@ -205,3 +248,4 @@ class App:
 if __name__ == "__main__":
     app = App()
     app.run()
+

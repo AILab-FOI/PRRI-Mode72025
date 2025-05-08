@@ -28,7 +28,7 @@ class Enemy:
         self.speed = speed
         self.alive = True
         self.min_distance = min_distance
-        self.texture = pg.image.load('textures/airship_1.png').convert_alpha()
+        self.texture = pg.image.load('textures/zeppelin_obican.png').convert_alpha()
         self.bullets = []
         self.hit_timer = 0
         self.hp = 100
