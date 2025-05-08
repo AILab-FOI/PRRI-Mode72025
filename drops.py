@@ -25,16 +25,17 @@ class Drop:
 
 
 class HealthDrop(Drop):
-    def __init__(self, pos, player):
+    def __init__(self, pos, player, app):
         super().__init__(pos)
-        self.texture.fill((0, 255, 0))  # Green box for now
+        self.texture = pg.image.load("textures/Heal_powerup.png").convert_alpha()
         self.player = player
+        self.app = app  # dodano za zvuk
 
     def on_pickup(self):
         print("[DROP] Picked up health drop!")
         if self.player.health < self.player.max_health:
-            self.player.health += 5
-            self.player.health = max(0, min(self.player.health, self.player.max_health))
+            self.player.health += 1
+            self.app.health_sound.play()  # sviraj zvuk
 
 
 class ShotgunDrop(Drop):
@@ -45,8 +46,8 @@ class ShotgunDrop(Drop):
 
     def on_pickup(self):
         print("[DROP] Picked up shotgun drop!")
-        self.app.weapon = SHOTGUN
-        self.app.weapon_timer = time.time() + 5
+        self.app.apply_powerup(SHOTGUN)
+        self.app.weapon_timer = time.time() + 10
 
 
 
@@ -59,7 +60,7 @@ class MinigunDrop(Drop):
 
     def on_pickup(self):
         print("[DROP] Picked up minigun drop!")
-        self.app.weapon = MINIGUN
-        self.app.weapon_timer = time.time() + 5
+        self.app.apply_powerup(MINIGUN)
+        self.app.weapon_timer = time.time() + 10
 
 

@@ -232,11 +232,11 @@ class App:
         pg.mixer.music.play(-1, 0.0)
 
     def apply_powerup(self, weapon_type):
-        if self.weapon != weapon_type:
-            self.weapon = weapon_type
-            self.weapon_timer = time.time() + 10
-            self.powerup_sound.stop()
-            self.powerup_sound.play()
+        print(f"[POWERUP] Weapon set to {weapon_type}")
+        self.weapon = weapon_type
+        self.weapon_timer = time.time() + 10
+        self.powerup_sound.stop()
+        self.powerup_sound.play()
 
     def run(self):
         while True:
@@ -248,3 +248,4 @@ class App:
 if __name__ == "__main__":
     app = App()
     app.run()
+
