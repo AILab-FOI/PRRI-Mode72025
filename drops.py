@@ -33,7 +33,7 @@ class HealthDrop(Drop):
     def on_pickup(self):
         print("[DROP] Picked up health drop!")
         if self.player.health < self.player.max_health:
-            self.player.health += 10
+            self.player.health += 1
 
 
 class ShotgunDrop(Drop):

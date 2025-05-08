@@ -6,11 +6,13 @@ from numba import njit, prange
 class Mode7:
     def __init__(self, app):
         self.app = app
-        self.floor_tex = pg.image.load('textures/ground_town_lowres.png').convert()
+#        self.floor_tex = pg.image.load('textures/ground_town_lowres.png').convert()
+        self.set_textures('textures/sky_lowres.png', 'textures/ground_grass_lowres.png')
         self.tex_size = self.floor_tex.get_size()
         self.floor_array = pg.surfarray.array3d(self.floor_tex)
 
-        self.ceil_tex = pg.image.load('textures/ceil_3.png').convert()
+#        self.ceil_tex = pg.image.load('textures/ceil_3.png').convert()
+        self.tex_size = self.ceil_tex.get_size()
         self.ceil_tex = pg.transform.scale(self.ceil_tex, self.tex_size)
         self.ceil_array = pg.surfarray.array3d(self.ceil_tex)
 
@@ -19,6 +21,15 @@ class Mode7:
         self.alt = 1.0
         self.angle = 0.0
         self.pos = np.array([0.0, 0.0])
+
+    def set_textures(self, sky_path, ground_path):
+        self.floor_tex = pg.image.load(ground_path).convert()
+        self.ceil_tex = pg.image.load(sky_path).convert()
+        self.tex_size = self.floor_tex.get_size()
+        self.floor_array = pg.surfarray.array3d(self.floor_tex)
+        self.ceil_tex = pg.transform.scale(self.ceil_tex, self.tex_size)
+        self.ceil_array = pg.surfarray.array3d(self.ceil_tex)
+
 
     def update(self):
         self.movement()
@@ -64,16 +75,17 @@ class Mode7:
                 py = (x * sin + y * cos)
 
                 # floor projection and transformation
-                floor_x = px / z - player_pos[1]
-                floor_y = py / z + player_pos[0]
+                floor_x = px / z - player_pos[0]
+                floor_y = py / z + player_pos[1]
 
                 # floor pos and color
                 floor_pos = int(floor_x * SCALE % tex_size[0]), int(floor_y * SCALE % tex_size[1])
                 floor_col = floor_array[floor_pos]
 
                 # ceil projection and transformation
-                ceil_x = alt * px / z - player_pos[1] * 0.3
-                ceil_y = alt * py / z + player_pos[0] * 0.3
+                ceil_x = alt * px / z - player_pos[0] * 0.3
+                ceil_y = alt * py / z + player_pos[1] * 0.3
+
 
                 # ceil pos and color
                 ceil_pos = int(ceil_x * SCALE % tex_size[0]), int(ceil_y * SCALE % tex_size[1])
@@ -105,23 +117,25 @@ class Mode7:
         sin_a = np.sin(self.angle)
         cos_a = np.cos(self.angle)
         dx, dy = 0, 0
-        speed_sin = SPEED * sin_a
-        speed_cos = SPEED * cos_a
+        player_speed = SPEED * 0.7
+        speed_sin = player_speed * sin_a
+        speed_cos = player_speed * cos_a
+
         self.angle %= 2 * np.pi
 
         keys = pg.key.get_pressed()
         if keys[pg.K_w]:
-            dx += speed_cos
-            dy += speed_sin
-        if keys[pg.K_s]:
-            dx += -speed_cos
-            dy += -speed_sin
-        if keys[pg.K_a]:
-            dx += speed_sin
-            dy += -speed_cos
-        if keys[pg.K_d]:
-            dx += -speed_sin
             dy += speed_cos
+            dx += speed_sin
+        if keys[pg.K_s]:
+            dy += -speed_cos
+            dx += -speed_sin
+        if keys[pg.K_a]:
+            dy += speed_sin
+            dx += -speed_cos
+        if keys[pg.K_d]:
+            dy += -speed_sin
+            dx += speed_cos
         self.pos[0] += dx
         self.pos[1] += dy
 

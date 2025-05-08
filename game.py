@@ -45,11 +45,16 @@ class Game:
         self.wave = 1
         self.spawn_wave(self.wave)
 
+
     def spawn_wave(self, wave_num):
         self.enemies.clear()
         for _ in range(5 + wave_num * 2):
             x, y = random.uniform(-10, 10), random.uniform(-10, 10)
             self.enemies.append(Enemy((x, y)))
+        if wave_num == 5:
+            self.mode7.set_textures('textures/sky_cloudyday_lowres.png', 'textures/ground_sand_lowres.png')
+        elif wave_num == 10:
+            self.mode7.set_textures('textures/polluted_sky_lowres.png', 'textures/groubd_volcan_lowres.png')
 
         match wave_num:
             case 3:

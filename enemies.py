@@ -32,7 +32,7 @@ class Enemy:
         self.bullets = []
         self.hit_timer = 0
         self.hp = 100
-        self.shoot_delay = 90
+        self.shoot_delay = 350
         self.shoot_timer = random.randint(0, self.shoot_delay)
 
     def update(self, player_pos):
