@@ -56,6 +56,38 @@ class Game:
         elif wave_num == 10:
             self.mode7.set_textures('textures/polluted_sky_lowres.png', 'textures/groubd_volcan_lowres.png')
 
+        match wave_num:
+            case 3:
+                self.mode7.set_textures('textures/sky_cloudyday_lowres.png', 'textures/ground_sand_lowres.png')
+            case 6:
+                self.mode7.set_textures('textures/polluted_sky_lowres.png', 'textures/groubd_volcan_lowres.png')
+            case 9:
+                self.mode7.set_textures('textures/sky_cloudynight_lowres.png', 'textures/ground_snow_lowres.png')
+            case 12:
+                self.mode7.set_textures('textures/sky_lowres.png', 'textures/ground_grass_lowres.png')
+            case 15:
+                self.mode7.set_textures('textures/sky_cloudyday_lowres.png', 'textures/ground_frozenice_lowres.png')
+            case 18:
+                self.mode7.set_textures('textures/sky_cloudyday_lowres.png', 'textures/ground_swamp_lowres.png')
+            case 21:
+                self.mode7.set_textures('textures/sky_night_lowres.png', 'textures/ground_factoryfloor_lowres.png')
+            case 24:
+                self.mode7.set_textures('textures/sky_cloudynight_lowres.png', 'textures/ground_town_lowres.png')
+            case 27:
+                self.mode7.set_textures('textures/polluted_sky_lowres.png', 'textures/ground_gravel_lowres.png')
+            case 30:
+                self.mode7.set_textures('textures/sky_lowres.png', 'textures/ground_rail_lowres.png')
+            case 33:
+                self.mode7.set_textures('textures/sky_cloudyday_lowres.png', 'textures/ground_graveldirt_lowres.png')
+            case 36:
+                self.mode7.set_textures('textures/sky_night_lowres.png', 'textures/ground_halfsnow_lowres.png')
+            case 39:
+                self.mode7.set_textures('textures/sky_lowres.png', 'textures/ground_sea_lowres.png')
+            case 42:
+                self.mode7.set_textures('textures/sky_cloudyday_lowres.png', 'textures/ground_dirt_lowres.png')
+            case _:
+                pass
+
     def update(self, player_pos):
         for proj in self.projectiles:
             proj.update()

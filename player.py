@@ -3,8 +3,8 @@ import numpy as np
 
 class Player:
     def __init__(self):
-        self.health = 6
-        self.max_health = 6
+        self.health = 60
+        self.max_health = 60
         self.hit_sound = pg.mixer.Sound('music/HP loss.mp3')
         self.health_bar_sprite = pg.image.load('textures/Steampunk_healthbar_anim.png').convert_alpha()
         self.frame_width = 64
