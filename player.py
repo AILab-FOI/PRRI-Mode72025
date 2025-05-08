@@ -3,8 +3,8 @@ import numpy as np
 
 class Player:
     def __init__(self):
-        self.health = 6
-        self.max_health = 6
+        self.health = 30
+        self.max_health = 30
         self.hit_sound = pg.mixer.Sound('music/HP loss.mp3')
         self.health_bar_sprite = pg.image.load('textures/Steampunk_healthbar_anim.png').convert_alpha()
         self.frame_width = 64
@@ -29,9 +29,11 @@ class Player:
         return self.health <= 0
 
     def draw_health(self, screen):
-        health_index = self.max_health - self.health
-        if health_index >= 6 or health_index <= 0:
+        health_index = 6 - (self.health // 5)
+        if health_index >= 30 or health_index <= 0:
             health_index = 0
+        if self.health <= 4 and self.health >= 1:
+            health_index = 5
         x = screen.get_width() - self.scaled_width - 10
         y = 10
         screen.blit(self.health_bar_frames[health_index], (x, y))
