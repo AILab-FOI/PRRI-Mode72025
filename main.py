@@ -20,6 +20,8 @@ class App:
         self.game = Game(self.mode7, self.player, self)
         self.menu = Menu(self)
         self.state = MENU
+        self.speed_multiplier = 1.0
+        self.speed_timer = 0
         self.minigun_last_shot = 0
         self.weapon = REVOLVER
         self.weapon_timer = 0
@@ -51,6 +53,14 @@ class App:
         pg.mixer.music.load("music/Pixel Pulse.mp3")
         pg.mixer.music.set_volume(0.5)
         pg.mixer.music.play(-1, 0.0)
+        
+    def apply_speed_boost(self, multiplier, duration=5):
+        self.speed_multiplier = multiplier
+        self.speed_timer = time.time() + duration
+        print(f"[SPEED] Boost applied: x{multiplier} fo r {duration}s")
+        self.powerup_sound.stop()
+        self.powerup_sound.play()
+
 
     def show_results_screen(self):
         time_survived = int(time.time() - self.start_time)
@@ -122,6 +132,10 @@ class App:
                     self.minigun_last_shot = now
             self.clock.tick()
             pg.display.set_caption(f'{self.clock.get_fps():.1f}')
+            if self.speed_multiplier != 1.0 and time.time() > self.speed_timer:
+                self.speed_multiplier = 1.0
+                print("[SPEED] Boost expired")
+
 
         elif self.state == GAME_OVER:
             pass

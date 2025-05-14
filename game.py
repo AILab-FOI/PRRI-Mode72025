@@ -1,7 +1,7 @@
 import pygame as pg
 import numpy as np
 import random
-from drops import HealthDrop, ShotgunDrop, MinigunDrop
+from drops import HealthDrop, ShotgunDrop, MinigunDrop, SpeedUpDrop
 from enemies import Enemy
 
 class Projectile:
@@ -100,7 +100,7 @@ class Game:
                     if not enemy.alive:
                         self.app.enemies_killed += 1
                         if random.random() < 0.3:
-                            drop_type = random.choice([HealthDrop, ShotgunDrop, MinigunDrop])
+                            drop_type = random.choice([HealthDrop, ShotgunDrop, MinigunDrop, SpeedUpDrop])
                             pos = enemy.pos.copy()
                             if drop_type == HealthDrop:
                                 self.drops.append(HealthDrop(pos, self.player, self.app))
