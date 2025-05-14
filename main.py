@@ -20,6 +20,8 @@ class App:
         self.game = Game(self.mode7, self.player, self)
         self.menu = Menu(self)
         self.state = MENU
+        self.speed_multiplier = 1.0
+        self.speed_timer = 0
         self.minigun_last_shot = 0
         self.weapon = REVOLVER
         self.weapon_timer = 0
@@ -34,6 +36,9 @@ class App:
             SHOTGUN: pg.image.load("textures/shotgun_steampunk.png").convert_alpha(),
             MINIGUN: pg.image.load("textures/minigun_steampunk.png").convert_alpha(),
         }
+
+        self.progression_box = pg.image.load("textures/progression_blank.png").convert_alpha()
+        self.progression_box = pg.transform.scale(self.progression_box, (200, 200))  # prilagodi veličinu
 
         original_full = pg.image.load("textures/steampunk_bar_full.png").convert_alpha()
         scale_factor = 0.19
@@ -51,6 +56,14 @@ class App:
         pg.mixer.music.load("music/Pixel Pulse.mp3")
         pg.mixer.music.set_volume(0.5)
         pg.mixer.music.play(-1, 0.0)
+        
+    def apply_speed_boost(self, multiplier, duration=5):
+        self.speed_multiplier = multiplier
+        self.speed_timer = time.time() + duration
+        print(f"[SPEED] Boost applied: x{multiplier} fo r {duration}s")
+        self.powerup_sound.stop()
+        self.powerup_sound.play()
+
 
     def show_results_screen(self):
         time_survived = int(time.time() - self.start_time)
@@ -122,6 +135,10 @@ class App:
                     self.minigun_last_shot = now
             self.clock.tick()
             pg.display.set_caption(f'{self.clock.get_fps():.1f}')
+            if self.speed_multiplier != 1.0 and time.time() > self.speed_timer:
+                self.speed_multiplier = 1.0
+                print("[SPEED] Boost expired")
+
 
         elif self.state == GAME_OVER:
             pass
@@ -129,13 +146,29 @@ class App:
 
 
     def draw_ui(self):
-        font = pg.font.SysFont('Arial', 24)
-        wave_text = font.render(f"Wave: {self.game.wave}", True, (255, 255, 255))
-        self.screen.blit(wave_text, (10, 10))
+        # Lokacija i prikaz okvira
+        box_x, box_y = 20, 20
+        self.screen.blit(self.progression_box, (box_x, box_y))
 
-        enemy_count = len(self.game.enemies)
-        enemy_text = font.render(f"Enemies: {enemy_count}", True, (255, 255, 255))
-        self.screen.blit(enemy_text, (10, 40))
+        # Font i boja
+        font = pg.font.Font("fonts/steampunk-mainmenu.ttf", 20)
+        color = (255, 220, 180)
+
+        # Tekstovi
+        wave_text = font.render(f"Wave: {self.game.wave}", True, color)
+        enemy_label = font.render("Enemies:", True, color)
+        enemy_number = font.render(str(len(self.game.enemies)), True, color)
+
+        # Pozicije
+        text_x = box_x + 70
+        wave_y = box_y + 65
+        enemy_y = box_y + 100
+        enemy_number_y = enemy_y + 25  # ispod "Enemies:"
+
+        # Crtanje
+        self.screen.blit(wave_text, (text_x, wave_y))
+        self.screen.blit(enemy_label, (text_x, enemy_y))
+        self.screen.blit(enemy_number, (text_x + 25, enemy_number_y))  # lagani pomak desno
 
         self.player.draw_health(self.screen)
         # Show icon if powerup is active
@@ -144,7 +177,7 @@ class App:
          #   self.screen.blit(self.powerup_icon, (1115, 200))  # pozicija ikone
 
         if self.weapon != REVOLVER and time.time() < self.weapon_timer:
-            x, y = 1090, 200
+            x, y = 90, 430
             total = 10  # trajanje
             remaining = self.weapon_timer - time.time()
             percent = max(0, min(1, remaining / total))

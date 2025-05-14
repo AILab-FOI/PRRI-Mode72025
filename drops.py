@@ -64,4 +64,12 @@ class MinigunDrop(Drop):
         self.app.apply_powerup(MINIGUN)
         self.app.weapon_timer = time.time() + 10
 
+class SpeedUpDrop(Drop):
+    def __init__(self, pos, app):
+        super().__init__(pos)
+        self.texture = pg.image.load("textures/Speed_powerup.png").convert_alpha()
+        self.app = app
 
+    def on_pickup(self):
+        print("[DROP] Picked up speed power-up!")
+        self.app.apply_speed_boost(1.6, duration=10)
