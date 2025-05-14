@@ -117,7 +117,7 @@ class Mode7:
         sin_a = np.sin(self.angle)
         cos_a = np.cos(self.angle)
         dx, dy = 0, 0
-        player_speed = SPEED * 0.7
+        player_speed = SPEED * 0.7 * self.app.speed_multiplier
         speed_sin = player_speed * sin_a
         speed_cos = player_speed * cos_a
 
