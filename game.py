@@ -2,17 +2,16 @@ import pygame as pg
 import numpy as np
 import random
 from drops import HealthDrop, ShotgunDrop, MinigunDrop, SpeedUpDrop
-from enemies import Enemy
+from enemies import Enemy, FastEnemy, TankEnemy
 
 class Projectile:
-    def __init__(self, player_pos, player_angle, speed=0.5, max_distance=20):
+    def __init__(self, player_pos, player_angle, speed=0.5, max_distance=20, offset_distance = 2.0):
         player_angle = np.radians(player_angle) if player_angle > np.pi * 2 else player_angle
 
         direction_x = np.cos(player_angle - np.pi/2)
         direction_y = -np.sin(player_angle - np.pi/2)
         self.direction = np.array([direction_x, direction_y], dtype=np.float32)
 
-        offset_distance = 2.0
         rotated_offset_x = offset_distance * direction_x
         rotated_offset_y = offset_distance * direction_y
 
@@ -51,7 +50,16 @@ class Game:
         self.enemies.clear()
         for _ in range(5 + wave_num * 2):
             x, y = random.uniform(-10, 10), random.uniform(-10, 10)
-            self.enemies.append(Enemy((x, y)))
+            if wave_num < 5:
+                enemy = Enemy((x, y))
+            elif wave_num < 10:
+                enemy = random.choice([Enemy((x, y)), FastEnemy((x, y))])
+            elif wave_num < 15:
+                enemy = random.choice([FastEnemy((x, y)), TankEnemy((x, y))])
+            else:
+                enemy = random.choice([Enemy((x, y)), FastEnemy((x, y)), TankEnemy((x, y))])
+            self.enemies.append(enemy)
+
         if wave_num == 5:
             self.mode7.set_textures('textures/sky_cloudyday_lowres.png', 'textures/ground_sand_lowres.png')
         elif wave_num == 10:
@@ -113,8 +121,12 @@ class Game:
             enemy.update(player_pos)
             for bullet in enemy.bullets:
                 if np.linalg.norm(np.array(player_pos) - bullet.pos) < 0.5:
-                    self.player.take_damage(1)
+                    self.player.take_damage(enemy.damage)
                     bullet.active = False
+            if isinstance(enemy, FastEnemy):
+                if np.linalg.norm(np.array(player_pos) - enemy.pos) < 0.5:
+                    self.player.take_damage(enemy.damage)
+                    enemy.alive = False
 
         self.enemies = [e for e in self.enemies if e.alive]
 
@@ -137,11 +149,14 @@ class Game:
 
 
     def shoot_revolver(self, pos, angle):
-        self.projectiles.append(Projectile(pos, angle, speed=0.6))
+        offset = 0.5 if any(np.linalg.norm(enemy.pos - pos) < 2.0 for enemy in self.enemies) else 2.0
+        self.projectiles.append(Projectile(pos, angle, speed=0.6, offset_distance=offset))
 
     def shoot_shotgun(self, pos, angle):
         for spread in [-0.2, 0, 0.2]:
-            self.projectiles.append(Projectile(pos, angle + spread, speed=0.5))
+            offset = 0.5 if any(np.linalg.norm(enemy.pos - pos) < 2.0 for enemy in self.enemies) else 2.0
+            self.projectiles.append(Projectile(pos, angle + spread, speed=0.5, offset_distance=offset))
 
     def shoot_minigun(self, pos, angle):
-        self.projectiles.append(Projectile(pos, angle, speed=0.5))
+        offset = 0.5 if any(np.linalg.norm(enemy.pos - pos) < 2.0 for enemy in self.enemies) else 2.0
+        self.projectiles.append(Projectile(pos, angle, speed=0.5, offset_distance=offset))
