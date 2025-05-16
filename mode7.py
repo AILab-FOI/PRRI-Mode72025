@@ -88,7 +88,9 @@ class Mode7:
 
 
                 # ceil pos and color
-                ceil_pos = int(ceil_x * SCALE % tex_size[0]), int(ceil_y * SCALE % tex_size[1])
+                ceil_u = int(np.abs(ceil_x * SCALE) % tex_size[0])
+                ceil_v = int(np.abs(ceil_y * SCALE) % tex_size[1])
+                ceil_pos = (ceil_u, ceil_v)
                 ceil_col = ceil_array[ceil_pos]
 
                 # shading
