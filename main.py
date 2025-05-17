@@ -28,6 +28,10 @@ class App:
         self.powerup_icon = pg.image.load("textures/Steampunk_valve_and_pipe.png").convert_alpha()
         self.powerup_icon = pg.transform.scale(self.powerup_icon, (128, 128))
         self.powerup_sound = pg.mixer.Sound("music/Timer.mp3")
+
+
+
+
         self.start_time = time.time()
         self.enemies_killed = 0
         self.results_screen = None
@@ -41,10 +45,18 @@ class App:
         self.progression_box = pg.transform.scale(self.progression_box, (200, 200))  # prilagodi veličinu
 
         original_full = pg.image.load("textures/steampunk_bar_full.png").convert_alpha()
-        scale_factor = 0.19
+        scale_factor = 0.2
         self.bar_full = pg.transform.scale(original_full, (
         int(original_full.get_width() * scale_factor), int(original_full.get_height() * scale_factor)))
 
+        original_speed = pg.image.load("textures/powerup_bar.png").convert_alpha()
+        scale_factor = 0.1
+        scaled_speed = pg.transform.scale(original_speed, (
+            int(original_speed.get_width() * scale_factor),
+            int(original_speed.get_height() * scale_factor)
+        ))
+
+        self.bar_speed = pg.transform.rotate(scaled_speed, 90)  # rotiraj za 90° udesno
 
         for key in self.weapon_icons:
             self.weapon_icons[key] = pg.transform.scale(self.weapon_icons[key], (80, 80))
@@ -61,8 +73,7 @@ class App:
         self.speed_multiplier = multiplier
         self.speed_timer = time.time() + duration
         print(f"[SPEED] Boost applied: x{multiplier} fo r {duration}s")
-        self.powerup_sound.stop()
-        self.powerup_sound.play()
+
 
 
     def show_results_screen(self):
@@ -177,7 +188,7 @@ class App:
          #   self.screen.blit(self.powerup_icon, (1115, 200))  # pozicija ikone
 
         if self.weapon != REVOLVER and time.time() < self.weapon_timer:
-            x, y = 90, 430
+            x, y = 85, 600
             total = 10  # trajanje
             remaining = self.weapon_timer - time.time()
             percent = max(0, min(1, remaining / total))
@@ -188,6 +199,21 @@ class App:
                     (0, 0, full_width, self.bar_full.get_height())
                 )
                 self.screen.blit(bar_clip, (x, y))
+
+        if self.speed_multiplier > 1.0 and time.time() < self.speed_timer:
+            x2, y2 = 1440, 180  # Lokacija gdje želiš prikazati bar
+            total = 5.4
+            remaining = self.speed_timer - time.time()
+            percent = max(0, min(1, remaining / total))
+
+            full_height = int(self.bar_speed.get_height() * percent)
+            if full_height > 0:
+
+                bar_clip = self.bar_speed.subsurface(
+                    (0, self.bar_speed.get_height() - full_height, self.bar_speed.get_width(), full_height)
+                )
+                rotated_clip = pg.transform.rotate(bar_clip, 0)
+                self.screen.blit(rotated_clip, (x2, y2 + (self.bar_speed.get_height() - full_height)))
 
     def draw_weapon_ui(self):
         padding = 20
