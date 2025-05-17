@@ -60,11 +60,6 @@ class Game:
                 enemy = random.choice([Enemy((x, y)), FastEnemy((x, y)), TankEnemy((x, y))])
             self.enemies.append(enemy)
 
-        if wave_num == 5:
-            self.mode7.set_textures('textures/sky_cloudyday_lowres.png', 'textures/ground_sand_lowres.png')
-        elif wave_num == 10:
-            self.mode7.set_textures('textures/polluted_sky_lowres.png', 'textures/groubd_volcan_lowres.png')
-
         match wave_num:
             case 3:
                 self.mode7.set_textures('textures/sky_cloudyday_lowres.png', 'textures/ground_sand_lowres.png')
