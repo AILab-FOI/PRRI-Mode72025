@@ -43,6 +43,7 @@ class Game:
         self.drops = []
         self.wave = 1
         self.wave_sound = pg.mixer.Sound("music/Level up.mp3")
+        self.explosion_sound = pg.mixer.Sound("music/eksplozija.mp3")
         self.spawn_wave(self.wave)
 
 
@@ -121,6 +122,7 @@ class Game:
             if isinstance(enemy, FastEnemy):
                 if np.linalg.norm(np.array(player_pos) - enemy.pos) < 0.5:
                     self.player.take_damage(enemy.damage)
+                    self.explosion_sound.play()
                     enemy.alive = False
 
         self.enemies = [e for e in self.enemies if e.alive]
