@@ -16,7 +16,7 @@ class Menu:
         button_width, button_height = 300, 60
         screen_width, screen_height = WIN_RES
         button_x = (screen_width - button_width) // 2
-        button_y_start = (screen_height - 2 * button_height) // 2 + button_height
+        button_y_start = self.app.screen.get_height() // 2 + 100  # Pomiče Start game niže
 
         self.buttons = [
             {'text': 'Start game', 'rect': pg.Rect(button_x, button_y_start, button_width, button_height), 'action': self.start_game},
@@ -42,14 +42,17 @@ class Menu:
     def draw(self):
         print("Drawing menu.")
         self.app.screen.blit(self.background, (0, 0))
-        zeppelins_text = self.title_font.render("Zeppelins", True, self.grey)
-        self.screen.blit(
-            zeppelins_text,
-            (
-                self.screen.get_width() // 2 - zeppelins_text.get_width() // 2,
-                self.screen.get_height() // 6
-            )
-        )
+        title_1 = self.title_font.render("Zeppelino", True, self.grey)
+        title_2 = self.title_font.render("shooterino", True, self.grey)
+
+        x_center = self.screen.get_width() // 2
+        start_y = self.screen.get_height() // 10
+
+        # nacrtaj prvi red
+        self.screen.blit(title_1, (x_center - title_1.get_width() // 2, start_y))
+
+        # nacrtaj drugi red ispod
+        self.screen.blit(title_2, (x_center - title_2.get_width() // 2, start_y + title_1.get_height() + 10))
         for button in self.buttons:
             text = self.font.render(button['text'], True, (255, 255, 255))
             text_rect = text.get_rect(center=button['rect'].center)

@@ -72,4 +72,4 @@ class SpeedUpDrop(Drop):
 
     def on_pickup(self):
         print("[DROP] Picked up speed power-up!")
-        self.app.apply_speed_boost(1.6, duration=10)
+        self.app.apply_speed_boost(1.6, duration=5.4)
